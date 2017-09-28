@@ -19,7 +19,7 @@ function MoveForward(player){
 }
 
 function MoveBackward(player) {
-    if ((player.x == player.tox) || (player.y == player){
+    if ((player.x == player.tox) || (player.y == player)){
         player.toX, player.toY = NextCoord(player.x, player.y, player.direction, -stepSize);
     }
 }
@@ -36,11 +36,13 @@ function CreatePlayer(x , y , startDirection) {
         toY = 0,
         moving,
         direction = startDirection,
+        directionType = DirectionEnum.FORWARD,
         rotating = false,
         shotx = 0,
         shoty = 0,
         movingShot = false,
-        shotDirection = DirectionEnum.DOWN
+        shotDirection = DirectionEnum.DOWN,
+        movementClass = ""
     };
     return player;
 }
@@ -85,14 +87,55 @@ function NewDirection(direction, rotateDirection) {
     }
 }
 
+function HasTankMovedAllTheWay(nowX, nowY, toX, toY, direction , directionType) {
+    if (directionType == DirectionEnum.BACKWARD) {
+        nowX *= -1;
+        nowY *= -1;
+        toX *= -1;
+        toY *= -1;
+    }
+    switch (direction) {
+        case DirectionEnum.DOWN:
+            if (nowY >= toY)
+                return true;
+            break;
+        case DirectionEnum.LEFT:
+            if (nowX <= toX)
+                return true;
+            break;
+        case DirectionEnum.UP:
+            if (nowY <= toY)
+                return true;
+            break;
+        case DirectionEnum.RIGHT:
+            if (nowX >= toX)
+                return true;
+            break;
+    }
+    return false;
+}
+
 function MoveObjects() {
     var players = [player1, player2];
     for (var i = 0; i < 2; i++) {
         thisPlayer = players[i];
 
-        if (thisPlayer.x != thisPlayer.toX && !thisPlayer.moving)
-            $(`#player${i+1}`).addClass()
+        if (thisPlayer.moving) {
+            var position = $(`#player${i + 1}`).position();
+            var x = position.left + halfSquareSize;
+            var y = position.top + halfSquareSize;
+            if (HasTankMovedAllTheWay(x, y, thisPlayer.toX, thisPlayer.toY, thisPlayer.direction)) {
+                thisPlayer.x = thisPlayer.toX;
+                thisPlayer.y = thisPlayer.toY;
+                thisPlayer.moving = false;
+            }
 
+        } else {
+            player.movementClass = `move${player.direction}`;
+            $(`#player${i + 1}`).addClass(player.movementClass);
+        }
+
+        // todo: fortsätt med rotation!
 
     }
 }
@@ -101,10 +144,15 @@ var DirectionEnum = {
     UP: 0,
     LEFT: 1,
     DOWN: 2,
-    RIGHT:3
+    RIGHT: 3,
+    FORWARD: 4,
+    BACKWARD:5
 }
-var player1 = CreatePlayer(0 , 0 , DirectionEnum.DOWN);
-var player2 = CreatePlayer(14, 14, DirectionEnum.UP);
+
+var squareSize = 60; //square size in pixels
+var halfSquareSize = squareSize / 2;
+var player1 = CreatePlayer(0 * squareSize, 0 * squareSize , DirectionEnum.DOWN);
+var player2 = CreatePlayer(14 * squareSize, 14 * squareSize, DirectionEnum.UP);
 var stepSize = 1;
 
 $(document).keydown(function (event) {
@@ -119,11 +167,11 @@ $(document).keydown(function (event) {
             MoveBackward(player1);
             break;
         case 65: //a
-            if (!player1.rotating)
+            if (!player1.rotating && !player1.moving)
                 RotateLeft(player1);
             break;
         case 68: //d
-            if (!player1.rotating)
+            if (!player1.rotating && !player1.moving)
                 RotateRight(player1);
             break;
         case 32: //space
@@ -136,11 +184,11 @@ $(document).keydown(function (event) {
             MoveBackward(player2);
             break;
         case 37: //left
-            if (!player2.rotating)
+            if (!player2.rotating && !player2.moving)
                 RotateLeft(player2);
             break;
         case 39: //right
-            if (!player2.rotating)
+            if (!player2.rotating && !player2.moving)
                 RotateRight(player2);
             break;
 
