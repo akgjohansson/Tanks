@@ -37,28 +37,30 @@ function Shoot(player) {
     if (!player.movingShot) {
         player.shotDirection = player.direction;
         player.movingShot = true;
-        var newPosition = NextCoord(player.shotx , player.shoty , player.shotDirection , stepSize/2)
+        var newPosition = NextCoord(player.shotx, player.shoty, player.shotDirection, stepSize / 2);
+        $(`#${player.name}shot`).css("left", newPosition[0] - halfShotSize);
+        $(`#${player.name}shot`).css("top", newPosition[1] - halfShotSize);
         $(`#${player.name}`).addClass(`shot${player.shotDirection}`);
+        $(`#${player.name}shot`).removeClass('invisible');
     }
 }
 
-function CanIGoHere(x, y , player) {
-    var squareType = GetSquareType(player);
+function CanIGoHere(x, y, player) {
+    var tryx = (x - halfSquareSize) / squareSize;
+    var tryy = (y - halfSquareSize) / squareSize;
+    var squareType = GetSquareType(tryx , tryy);
     switch (squareType) {
-        case 'road':
-        case 'water':
-        case 'bush':
-            return true;
         case 'wall':
             return false;
     }
+    return true;
 }
 
-function GetSquareType(player) {
-    var tankClasses = document.getElementById(`#${player.name}`).className.split(/\s+/);
-    for (var i = 0; i < tankClasses.length; i++) {
+function GetSquareType(x , y) {
+    var squareClasses = document.getElementById(`.x${x}.y${y}`).className.split(/\s+/);
+    for (var i = 0; i < squareClasses.length; i++) {
         for (var j = 0; j < squareTypes.length; j++) {
-            if (tankClasses[i] == squareTypes[j])
+            if (squareClasses[i] == squareTypes[j])
                 return squareTypes[j];
         }
     }
@@ -198,11 +200,61 @@ function RotateTheTank(player) {
     }
 }
 
-function ValidateShotMovement(player, opponent) {
+function ShootTheOpponent(player,opponent) {
+    opponent.hits++;
+    if (opponent.hits == lives)
+        GameOver(player);
+    DrawRemainingLife(opponent);
+}
+
+function GameOver(player) {
+
+}
+
+function DrawRemainingLife(player) {
+    $(`#${player.name}Life`).html("");
+    for (var i = 0; i < lives - player.hits; i++) {
+
+    }
+    $(`#${player.name}Life`).appendTo('<img src="Static\img\PinkTank.png" class="lifeToken"');
+}
+
+function CanShotGoHere(player, opponent) {
+    var nextSquare = NextCoord(player.shotx, player.shoty, player.shotDirection, gridSize);
+    var nextX = (nextSquare[0] - halfSquareSize) / gridSize;
+    var nextY = (nextSquare[1] - halfSquareSize) / gridSize;
+    var nextSquareType = GetSquareType(nextX, nextY);
+    if (nextSquareType == "wall" || nextSquareType == "bush")
+        return 0;
+    if (opponent.x == nextSquare[0] && opponent.y == nextSquare[1]) {
+        ShootTheOpponent(player,opponent);
+        return 2;
+    }
+    return 1;
+}
+
+
+
+function PerformShotMovement(player, opponent) {
     var shotPosition = $(`#${player.name}`).position();
     switch (player.shotDirection) {
         case DirectionEnum.UP:
-            if (shotPosition)
+            if (shotPosition[1] <= player.shotToY) {
+                if (CanShotGoHere(player, opponent)) {
+                    var nextPosition = NextCoord(player.shotx, player.shoty, player.shotDirection, gridSize);
+                    player.shotToX = nextPosition[0];
+                    player.shotToY = nextPosition[1];
+                } else {
+                    player.movingShot = false;
+                    $(`#${player.name}shot`).addClass('invisible');
+                }
+                
+            }
+            break;
+        case DirectionEnum.LEFT:
+            if (shotPosition[0] <= player.shotToX)
+                CanShotGoHere(player,opponent)
+            
         default:
     }
 }
@@ -225,7 +277,7 @@ function MoveObjects() {
 
         if (thisPlayer.movingShot) {
             var opponentIndex = (i + 1) % 2;
-            ValidateShotMovement(players[i], players[opponentIndex]);
+            PerformShotMovement(players[i], players[opponentIndex]);
         }
 
     }
@@ -262,17 +314,19 @@ var DirectionEnum = {
     FORWARD: 4,
     BACKWARD:5
 }
-
+var lives = 3;
 var rows = 15;
 var columns = 15;
 var squareSize = 60; //square size in pixels
 var halfSquareSize = squareSize / 2;
+var shotSize = 14;
+var halfShotSize = shotSize / 2;
 var xBoundry = [halfSquareSize, squareSize * columns - halfSquareSize];
 var yBoundry = [halfSquareSize, squareSize * rows - halfSquareSize];
 var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize , DirectionEnum.DOWN , 'player1');
 var player2 = CreatePlayer(columns * squareSize - halfSquareSize, rows * squareSize - halfSquareSize, DirectionEnum.UP , 'player2');
 var stepSize = 1 * gridSize;
-var squareTypes = ['road', 'wall', 'water','bush'];
+var squareTypes = ['road', 'wall', 'water','bush','bridge'];
 
 $(document).keydown(function (event) {
     switch (event.keyCode) {

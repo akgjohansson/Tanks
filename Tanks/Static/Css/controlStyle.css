@@ -1,9 +1,18 @@
-﻿body {
-
+﻿:root{
+    --speed: 5px
 }
 
-.moveLEFT{
+body {
 
+}
+polymer-element{}
+.moveLEFT {
+    transform: translate(-100px,0);
+    -webkit-transform: translate(350px,0); /** Chrome & Safari **/
+    -o-transform: translate(350px,0); /** Opera **/
+    -moz-transform: translate(350px,0); /** Firefox **/
+    -webkit-transition-timing-function: linear; /* Safari and Chrome */
+    transition-timing-function: linear;
 }
 
 .moveRIGHT{
@@ -16,4 +25,24 @@
 
 .moveDOWN{
 
+}
+
+.shootUP{
+
+}
+
+.shootDOWN{
+
+}
+
+.shootLEFT{
+
+}
+
+.shootRIGHT{
+
+}
+
+.invisible{
+    display:none;
 }
