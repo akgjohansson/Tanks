@@ -14,17 +14,29 @@ function RotateRight(player)
 }
 function MoveForward(player){
     if ((player.x == player.toX) && (player.y == player.toY)) {
-        player.toX, player.toY = NextCoord(player.x, player.y, player.direction, stepSize);
+        var newPosition = NextCoord(player.x, player.y, player.direction, stepSize);
+        if (CanIGoHere(newPosition[0], newPosition[1])) {
+            player.toX = newPosition[0];
+            player.toY = newPosition[1];
+        }
     }
 }
 
 function MoveBackward(player) {
-    if ((player.x == player.tox) || (player.y == player)){
-        player.toX, player.toY = NextCoord(player.x, player.y, player.direction, -stepSize);
+    if ((player.x == player.tox) || (player.y == player)) {
+        var newPosition = NextCoord(player.x, player.y, player.direction, -stepSize);
+        if (CanIGoHere(newPosition[0], newPosition[1])) {
+            player.toX = newPosition[0];
+            player.toY = newPosition[1];
+        }
     }
 }
 
 function Shoot(player) {
+
+}
+
+function CanIGoHere(x, y) {
 
 }
 
@@ -50,13 +62,13 @@ function CreatePlayer(x , y , startDirection) {
 function NextCoord(x, y, direction, step) {
     switch (direction) {
         case DirectionEnum.UP:
-            return x, y - step;
+            return [x, y - step];
         case DirectionEnum.DOWN:
-            return x, y + step;
+            return [x, y + step];
         case DirectionEnum.LEFT:
-            return x - step, y;
+            return [x - step, y];
         case DirectionEnum.RIGHT:
-            return x + step, y;
+            return [x + step, y];
         default:
             break;
     }
@@ -115,6 +127,23 @@ function HasTankMovedAllTheWay(nowX, nowY, toX, toY, direction , directionType) 
     return false;
 }
 
+function GetRotationAngle(i) {
+    var tank = $(`#player${i + 1}`);
+    var input = tank.css("-webkit-transform") ||
+        tank.css("-moz-transform") ||
+        tank.css("-ms-transform") ||
+        tank.css("-o-transform") ||
+        tank.css("transform");
+    if (input !== 'none') {
+        var values = matrix.split('(')[1].split(')')[0].split(',');
+        var a = values[0];
+        var b = values[1];
+        return Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    } else {
+        return 0;
+    }
+}
+
 function MoveObjects() {
     var players = [player1, player2];
     for (var i = 0; i < 2; i++) {
@@ -128,6 +157,7 @@ function MoveObjects() {
                 thisPlayer.x = thisPlayer.toX;
                 thisPlayer.y = thisPlayer.toY;
                 thisPlayer.moving = false;
+                $(`#player${i + 1}`).removeClass(player.movementClass);
             }
 
         } else {
@@ -135,7 +165,9 @@ function MoveObjects() {
             $(`#player${i + 1}`).addClass(player.movementClass);
         }
 
-        // todo: fortsätt med rotation!
+        if (player.rotating) {
+            var angle = GetRotationAngle(i);
+        }
 
     }
 }
