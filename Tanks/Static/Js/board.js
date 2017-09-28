@@ -21,6 +21,22 @@
     $(".square").css("height", `${squareSize}px`);
     $(".square").css("width", `${squareSize}px`);
 }
+
+function PlaceTankAndShot(player) {
+    $("#mainDiv").append(`<div id="${player.name}" class="tank"></div>`);
+    var tankType;
+    if (player.name == "player1")
+        tankType = "../img/PinkTank.png";
+    else
+        tankType = "../img/CowTank.png";
+    $(`#${player.name}`).css("background-image", `url('${tankType}')`);
+    $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
+    $(`#${player.name}shot`).css("background-image", "url('../img/shot.png')"); //todo- rita shot!
+    $(`#${player.name}`).css("left", player.x + halfSquareSize);
+    $(`#${player.name}`).css("top", player.y + halfSquareSize);
+    $(`#${player.name}`).css("height", squareSize);
+    $(`#${player.name}`).css("width", squareSize);
+}
 /*
 0: road
 1:wall
@@ -51,4 +67,5 @@ var boardLayout =
         [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0],
         [0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 1, 1, 0, 0],];
 addDivs();
-
+PlaceTankAndShot(player1);
+PlaceTankAndShot(player2);
