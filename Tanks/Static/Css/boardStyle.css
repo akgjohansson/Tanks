@@ -5,19 +5,21 @@
 
 .road {
     background-image: url('../img/Ground.png');
-    height: 60px;
-    width: 60px;
+    
 }
 
 .wall {
-    height: 60px;
-    width: 60px;
+    
     background-image: url('../img/Wall.png');
 }
 
 .water {
-    height: 60px;
-    width: 60px;
+    
     background-image: url('../img/Ocean.png');
 }
 
+.square {
+    height: 60px;
+    width: 60px;
+    position:absolute;
+}

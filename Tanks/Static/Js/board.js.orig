@@ -5,12 +5,16 @@
         for (var y = 0; y < 15; y++) {
             $(`.x${x}`).appendTo(`<div class="y${y}">`)
 
+<<<<<<< HEAD
+
+=======
             var child = $(`.x${x}`).childern(`y${y}`);
 
             child.addClass(squareType[boardLayout[i][j]]);
             child.css('left', x * squareSize);
             child.css('top', y * squareSize);
             child.addClass('square');
+>>>>>>> controller
         }
     }
 }
@@ -30,3 +34,11 @@ var boardLayout =
         []];
 addDivs();
 
+<<<<<<< HEAD
+function setSquareType(x, y, type) {
+    $(".x1").children(".y1").addClass("");
+}
+
+addDivs();
+=======
+>>>>>>> controller

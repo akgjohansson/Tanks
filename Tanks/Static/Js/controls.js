@@ -34,11 +34,35 @@ function MoveBackward(player) {
 }
 
 function Shoot(player) {
-
+    if (!player.movingShot) {
+        player.shotDirection = player.direction;
+        player.movingShot = true;
+        var newPosition = NextCoord(player.shotx , player.shoty , player.shotDirection , stepSize/2)
+        $(`#${player.name}`).addClass(`shot${player.shotDirection}`);
+    }
 }
 
-function CanIGoHere(x, y) {
+function CanIGoHere(x, y , player) {
+    var squareType = GetSquareType(player);
+    switch (squareType) {
+        case 'road':
+        case 'water':
+        case 'bush':
+            return true;
+        case 'wall':
+            return false;
+    }
+}
 
+function GetSquareType(player) {
+    var tankClasses = document.getElementById(`#${player.name}`).className.split(/\s+/);
+    for (var i = 0; i < tankClasses.length; i++) {
+        for (var j = 0; j < squareTypes.length; j++) {
+            if (tankClasses[i] == squareTypes[j])
+                return squareTypes[j];
+        }
+    }
+    return null;
 }
 
 function CreatePlayer(x , y , startDirection , playerName) {
@@ -53,10 +77,13 @@ function CreatePlayer(x , y , startDirection , playerName) {
         directionType : DirectionEnum.FORWARD,
         rotating : false,
         shotx : 0,
-        shoty : 0,
-        movingShot : false,
+        shoty: 0,
+        shotToX: 0,
+        shotToY: 0,
+        movingShot: false,
         shotDirection : DirectionEnum.DOWN,
-        movementClass : ""
+        movementClass: "",
+        hits: 0
     };
     return player;
 }
@@ -146,33 +173,59 @@ function GetRotationAngle(playerName) {
     }
 }
 
+function GetTankMoving(player) {
+    player.movementClass = `move${player.direction}`;
+    $(`#${player.name}`).addClass(player.movementClass);
+    player.moving = true;
+}
+
+function ValidateTankMovement(player) {
+    var position = $(`#${player.name}`).position();
+    var x = position.left + halfSquareSize;
+    var y = position.top + halfSquareSize;
+    if (HasTankMovedAllTheWay(x, y, player.toX, player.toY, player.direction)) {
+        player.x = player.toX;
+        player.y = player.toY;
+        player.moving = false;
+        $(`#${player.name}`).removeClass(player.movementClass);
+    }
+}
+
+function RotateTheTank(player) {
+    var angle = GetRotationAngle(player.name);
+    if (HasTankRotatedAllTheWay(angle, player.direction)) {
+        StopRotation(player);
+    }
+}
+
+function ValidateShotMovement(player, opponent) {
+    var shotPosition = $(`#${player.name}`).position();
+    switch (player.shotDirection) {
+        case DirectionEnum.UP:
+            if (shotPosition)
+        default:
+    }
+}
+
 function MoveObjects() {
     var players = [player1, player2];
     for (var i = 0; i < 2; i++) {
         thisPlayer = players[i];
 
         if (thisPlayer.moving) {
-            var position = $(`#${thisPlayer.name}`).position();
-            var x = position.left + halfSquareSize;
-            var y = position.top + halfSquareSize;
-            if (HasTankMovedAllTheWay(x, y, thisPlayer.toX, thisPlayer.toY, thisPlayer.direction)) {
-                thisPlayer.x = thisPlayer.toX;
-                thisPlayer.y = thisPlayer.toY;
-                thisPlayer.moving = false;
-                $(`#${thisPlayer.name}`).removeClass(player.movementClass);
-            }
+            ValidateTankMovement(thisPlayer);
 
         } else if (thisPlayer.x != thisPlayer.toX || thisPlayer.y != thisPlayer.toY) {
-            player.movementClass = `move${player.direction}`;
-            $(`#${thisPlayer.name}`).addClass(player.movementClass);
-            thisPlayer.moving = true;
+            GetTankMoving(thisPlayer);
         }
 
-        if (player.rotating) {
-            var angle = GetRotationAngle(thisPlayer.name);
-            if (HasTankRotatedAllTheWay(angle, thisPlayer.direction)) {
-                StopRotation(thisPlayer);
-            }
+        if (thisPlayer.rotating) {
+            RotateTheTank(player);
+        }
+
+        if (thisPlayer.movingShot) {
+            var opponentIndex = (i + 1) % 2;
+            ValidateShotMovement(players[i], players[opponentIndex]);
         }
 
     }
@@ -210,11 +263,16 @@ var DirectionEnum = {
     BACKWARD:5
 }
 
+var rows = 15;
+var columns = 15;
 var squareSize = 60; //square size in pixels
 var halfSquareSize = squareSize / 2;
+var xBoundry = [halfSquareSize, squareSize * columns - halfSquareSize];
+var yBoundry = [halfSquareSize, squareSize * rows - halfSquareSize];
 var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize , DirectionEnum.DOWN , 'player1');
-var player2 = CreatePlayer(14 * squareSize + halfSquareSize, 14 * squareSize + halfSquareSize, DirectionEnum.UP , 'player2');
+var player2 = CreatePlayer(columns * squareSize - halfSquareSize, rows * squareSize - halfSquareSize, DirectionEnum.UP , 'player2');
 var stepSize = 1 * gridSize;
+var squareTypes = ['road', 'wall', 'water','bush'];
 
 $(document).keydown(function (event) {
     switch (event.keyCode) {

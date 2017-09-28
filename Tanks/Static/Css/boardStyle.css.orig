@@ -1,0 +1,40 @@
+﻿body {
+}
+
+
+
+.road {
+<<<<<<< HEAD
+    background-image: url('../img/Ground.png');
+    height: 60px;
+    width: 60px;
+}
+
+.wall {
+    height: 60px;
+    width: 60px;
+    background-image: url('../img/Wall.png');
+}
+
+.water {
+    height: 60px;
+    width: 60px;
+    background-image: url('../img/Ocean.png');
+=======
+    background-color: gray;
+}
+
+.wall {
+    background: repeating-linear-gradient(black, gray 10%, brown 20%);
+}
+
+.water {
+    background: linear-gradient(blue, aqua, blue)
+>>>>>>> controller
+}
+
+.square {
+    height: 60px;
+    width: 60px;
+    position:absolute;
+}
