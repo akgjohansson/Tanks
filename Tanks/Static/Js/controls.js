@@ -2,7 +2,8 @@
 {
     if (!player.rotating) {
         player.rotating = true;
-        player.direction = NewDirection(player.direction , DirectionEnum.LEFT);
+        player.direction = NewDirection(player.direction, DirectionEnum.LEFT);
+        
     }
 }
 function RotateRight(player)
@@ -40,21 +41,22 @@ function CanIGoHere(x, y) {
 
 }
 
-function CreatePlayer(x , y , startDirection) {
+function CreatePlayer(x , y , startDirection , playerName) {
     var player = {
-        x = 0,
-        y = 0,
-        toX = 0,
-        toY = 0,
-        moving,
-        direction = startDirection,
-        directionType = DirectionEnum.FORWARD,
-        rotating = false,
-        shotx = 0,
-        shoty = 0,
-        movingShot = false,
-        shotDirection = DirectionEnum.DOWN,
-        movementClass = ""
+        name : playerName,
+        x : 0,
+        y : 0,
+        toX : 0,
+        toY : 0,
+        moving : false,
+        direction : startDirection,
+        directionType : DirectionEnum.FORWARD,
+        rotating : false,
+        shotx : 0,
+        shoty : 0,
+        movingShot : false,
+        shotDirection : DirectionEnum.DOWN,
+        movementClass : ""
     };
     return player;
 }
@@ -127,8 +129,8 @@ function HasTankMovedAllTheWay(nowX, nowY, toX, toY, direction , directionType) 
     return false;
 }
 
-function GetRotationAngle(i) {
-    var tank = $(`#player${i + 1}`);
+function GetRotationAngle(playerName) {
+    var tank = $(`#${playerName}`);
     var input = tank.css("-webkit-transform") ||
         tank.css("-moz-transform") ||
         tank.css("-ms-transform") ||
@@ -150,26 +152,53 @@ function MoveObjects() {
         thisPlayer = players[i];
 
         if (thisPlayer.moving) {
-            var position = $(`#player${i + 1}`).position();
+            var position = $(`#${thisPlayer.name}`).position();
             var x = position.left + halfSquareSize;
             var y = position.top + halfSquareSize;
             if (HasTankMovedAllTheWay(x, y, thisPlayer.toX, thisPlayer.toY, thisPlayer.direction)) {
                 thisPlayer.x = thisPlayer.toX;
                 thisPlayer.y = thisPlayer.toY;
                 thisPlayer.moving = false;
-                $(`#player${i + 1}`).removeClass(player.movementClass);
+                $(`#${thisPlayer.name}`).removeClass(player.movementClass);
             }
 
-        } else {
+        } else if (thisPlayer.x != thisPlayer.toX || thisPlayer.y != thisPlayer.toY) {
             player.movementClass = `move${player.direction}`;
-            $(`#player${i + 1}`).addClass(player.movementClass);
+            $(`#${thisPlayer.name}`).addClass(player.movementClass);
+            thisPlayer.moving = true;
         }
 
         if (player.rotating) {
-            var angle = GetRotationAngle(i);
+            var angle = GetRotationAngle(thisPlayer.name);
+            if (HasTankRotatedAllTheWay(angle, thisPlayer.direction)) {
+                StopRotation(thisPlayer);
+            }
         }
 
     }
+}
+
+function StopRotation(player) {
+    player.rotating = false;
+    var degree;
+    switch (player.direction) {
+        case DirectionEnum.UP:
+            degree = 0;
+            break;
+        case DirectionEnum.RIGHT:
+            degree = 270;
+            break;
+        case DirectionEnum.DOWN:
+            degree = 180;
+            break;
+        case DirectionEnum.LEFT:
+            degree = 90;
+            break;
+    }
+    $(`#${player.name}`).removeClass(player.movementClass);
+    $(`#${player.name}`).css('-ms-transform', `rotate(${degree})`);
+    $(`#${player.name}`).css('-webkit-transform', `rotate(${degree})`);
+    $(`#${player.name}`).css('transform', `rotate(${degree})`);
 }
 
 var DirectionEnum = {
@@ -183,9 +212,9 @@ var DirectionEnum = {
 
 var squareSize = 60; //square size in pixels
 var halfSquareSize = squareSize / 2;
-var player1 = CreatePlayer(0 * squareSize, 0 * squareSize , DirectionEnum.DOWN);
-var player2 = CreatePlayer(14 * squareSize, 14 * squareSize, DirectionEnum.UP);
-var stepSize = 1;
+var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize , DirectionEnum.DOWN , 'player1');
+var player2 = CreatePlayer(14 * squareSize + halfSquareSize, 14 * squareSize + halfSquareSize, DirectionEnum.UP , 'player2');
+var stepSize = 1 * gridSize;
 
 $(document).keydown(function (event) {
     switch (event.keyCode) {
