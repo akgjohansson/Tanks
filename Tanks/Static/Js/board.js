@@ -4,8 +4,29 @@
         $("#mainDiv").appendTo(`<div class="x${x}">`)
         for (var y = 0; y < 15; y++) {
             $(`.x${x}`).appendTo(`<div class="y${y}">`)
+
+            var child = $(`.x${x}`).childern(`y${y}`);
+
+            child.addClass(squareType[boardLayout[i][j]]);
+            child.css('left', x * squareSize);
+            child.css('top', y * squareSize);
+            child.addClass('square');
         }
     }
 }
+/*
+0: road
+1:wall
+2:water
+3: bush
 
+*/
+var squareSize = 60;
+var squareType = ['road' , 'wall']
+var boardLayout =
+    [
+        [0, 0, 0, 1, 0, 0, 1..],
+        [],
+        []];
 addDivs();
+
