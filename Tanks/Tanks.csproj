@@ -162,6 +162,16 @@
     <Content Include="index.html" />
     <Content Include="Static\Css\boardStyle.css" />
     <Content Include="Static\Css\controlStyle.css" />
+    <Content Include="Static\img\BridgeNorth.png" />
+    <Content Include="Static\img\BridgeNorthSouth.png" />
+    <Content Include="Static\img\BridgeSouth.png" />
+    <Content Include="Static\img\BridgeWestEast.png" />
+    <Content Include="Static\img\Bush.png" />
+    <Content Include="Static\img\CowTank.png" />
+    <Content Include="Static\img\Ground.png" />
+    <Content Include="Static\img\Ocean.png" />
+    <Content Include="Static\img\PinkTank.png" />
+    <Content Include="Static\img\Wall.png" />
     <Content Include="Static\Js\board.js" />
     <Content Include="Static\Js\controls.js" />
     <Content Include="Web.config" />
@@ -174,7 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Static\img\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
