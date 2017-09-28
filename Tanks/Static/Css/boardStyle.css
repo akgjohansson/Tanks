@@ -4,7 +4,7 @@
 
 
 .road {
-    background-color: gray;
+    background-image: url('../img/Ground.png');
     height: 60px;
     width: 60px;
 }
@@ -12,12 +12,12 @@
 .wall {
     height: 60px;
     width: 60px;
-    background: repeating-linear-gradient(black, gray 10%, brown 20%);
+    background-image: url('../img/Wall.png');
 }
 
 .water {
     height: 60px;
     width: 60px;
-    background: linear-gradient(blue, aqua, blue)
+    background-image: url('../img/Ocean.png');
 }
 
