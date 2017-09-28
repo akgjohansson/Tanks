@@ -18,6 +18,26 @@
     background-image: url('../img/Ocean.png');
 }
 
+.bush {
+    background-image: url('../img/Bush');
+}
+
+.bridgeWE {
+    background-image: url('../img/BridgeWestEast.png');
+}
+
+.bridgeNS {
+    background-image: url('../img/BridgeNorthSouth.png');
+}
+
+.bridgeN {
+    background-image: url('../img/BridgeNorth.png');
+}
+
+.bridgeS {
+    background-image: url('../img/BridgeSouth.png');
+}
+
 .square {
     height: 60px;
     width: 60px;

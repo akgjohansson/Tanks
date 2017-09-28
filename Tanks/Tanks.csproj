@@ -166,6 +166,7 @@
     <Content Include="Static\img\BridgeNorthSouth.png" />
     <Content Include="Static\img\BridgeSouth.png" />
     <Content Include="Static\img\BridgeWestEast.png" />
+    <Content Include="Static\img\Bush.png" />
     <Content Include="Static\img\CowTank.png" />
     <Content Include="Static\img\Ground.png" />
     <Content Include="Static\img\Ocean.png" />
