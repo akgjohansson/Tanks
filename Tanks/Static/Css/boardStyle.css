@@ -1,7 +1,4 @@
-﻿body {
-}
-
-
+﻿
 
 .road {
     background-image: url('../img/Ground.png');
@@ -19,7 +16,7 @@
 }
 
 .bush {
-    background-image: url('../img/Bush');
+    background-image: url('../img/Bush.png');
 }
 
 .bridgeWE {
@@ -39,7 +36,5 @@
 }
 
 .square {
-    height: 60px;
-    width: 60px;
     position:absolute;
 }

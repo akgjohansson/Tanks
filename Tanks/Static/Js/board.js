@@ -1,18 +1,25 @@
 ﻿function addDivs() {
-
+    $("#mainDiv").html("hej");
     for (var x = 0; x < 15; x++) {
-        $("#mainDiv").appendTo(`<div class="x${x}">`)
-        for (var y = 0; y < 15; y++) {
-            $(`.x${x}`).appendTo(`<div class="y${y}">`)
+        $("#mainDiv").append(`<div class="x${x}"></div>`);
 
-            var child = $(`.x${x}`).children(`y${y}`);
+        var text = $("#mainDiv").text();
+        for (var y = 0; y < 15; y++) {
+            $(`.x${x}`).append(`<div class="y${y}"></div>`)
+            var child = $(`.x${x}`).children(`.y${y}`);
 
             child.addClass(squareType[boardLayout[x][y]]);
             child.css('left', x * squareSize);
             child.css('top', y * squareSize);
             child.addClass('square');
+
+            
+            var childClass = child.attr('class');
+            console.log(childClass);
         }
     }
+    $(".square").css("height", `${squareSize}px`);
+    $(".square").css("width", `${squareSize}px`);
 }
 /*
 0: road
@@ -25,7 +32,6 @@
 7: BridgeN
 
 */
-var squareSize = 60;
 var squareType = ['road' , 'wall', 'water', 'bush', 'bridgeWE', 'bridgeNS', 'bridgeN', 'bridgeS']
 var boardLayout =
     [
