@@ -32,8 +32,14 @@ function PlaceTankAndShot(player) {
     tank.css("background-image", `url('${tankType}')`);
     tank.css("background-size", `${squareSize * 0.8}px`);
     RotateTheTankToDirection(player);
+
     $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
-    $(`#${player.name}shot`).css("background-image", "url('/Static/img/shot.png')"); //todo- rita shot!
+    var shot = $(`#${player.name}shot`);
+    shot.css("width", `${shotSize}px`);
+    shot.css("height", `${shotSize}px`);
+
+    shot.css("background-image", "url('/Static/img/shot.png')"); //todo- rita shot!
+    shot.css("background-size", `${shotSize}px`);
     
     
     
@@ -43,18 +49,22 @@ function RotateTheTankToDirection(player , rotateDirection = null) {
     var degree = GetAngleFromDirection(player.direction); 
 
     // TODO: rotation
+    /*
+    alert(degree);
     if (rotateDirection != null) {
-        if (rotateDirection == "counter" && degree == 0) {
+        if (rotateDirection == "counter" && player.direction == DirectionEnum.LEFT) {
+            console.log(GetAngleFromDirection(player.direction));
+            console.log(player.direction);
             ResetAngleToUnit($(`#${player.name}`), 360);
-            degree = 360;
+            
         
         
-        } else if (rotateDirection == "clock" && degree == 360) {
+        } else if (rotateDirection == "clock" && DirectionEnum.RIGHT) {
             ResetAngleToUnit($(`#${player.name}`), 0);
-            degree = 360;
+            
         }
     }
-    
+    */
     $(`#${player.name}`).css("transform", `rotate(${degree}deg)`);
     
 
@@ -63,11 +73,11 @@ function RotateTheTankToDirection(player , rotateDirection = null) {
 function GetAngleFromDirection(direction) {
     switch (direction) {
         case DirectionEnum.LEFT:
-            return 90;
+            return 270;
         case DirectionEnum.DOWN:
             return 180;
         case DirectionEnum.RIGHT:
-            return 270;
+            return 90;
         default:
             return 0;
     }

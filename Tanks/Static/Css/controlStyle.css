@@ -1,7 +1,4 @@
-﻿:root{
-    --speed: 5px
-}
-
+﻿
 body {
 
 }
@@ -45,4 +42,15 @@ polymer-element{}
 
 .invisible{
     display:none;
+}
+
+.smoothShot{
+    
+    transition-timing-function:linear;
+}
+
+.shot {
+    left: 0px;
+    top: 0px;
+    position: absolute;
 }

@@ -58,16 +58,16 @@ else
 
 var rows = 15;
 var columns = 15;
-
 var squareSize = Math.floor(maxSize / rows);
 squareSize -= squareSize % 2;
+var shotSpeed = squareSize / 0.5;
 
 var halfSquareSize = squareSize / 2;
 console.log("halfSquareSize=", halfSquareSize);
-var shotSize = squareSize * 0.2;
+var shotSize = 12;
 var halfShotSize = shotSize / 2;
-var xBoundry = [halfSquareSize, squareSize * columns - halfSquareSize];
-var yBoundry = [halfSquareSize, squareSize * rows - halfSquareSize];
+var xBoundry = [0, squareSize * columns];
+var yBoundry = [0, squareSize * rows];
 var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize, DirectionEnum.DOWN, 'player1');
 var player2 = CreatePlayer(columns * squareSize - halfSquareSize, rows * squareSize - halfSquareSize, DirectionEnum.UP, 'player2');
 var stepSize = 1 * squareSize;
