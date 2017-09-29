@@ -40,7 +40,14 @@ function getHeight() {
         document.documentElement.clientHeight
     );
 }
-
+var DirectionEnum = {
+    UP: 0,
+    LEFT: 1,
+    DOWN: 2,
+    RIGHT: 3,
+    FORWARD: 4,
+    BACKWARD: 5
+}
 var windowHeight = getHeight();
 var windowWidth = getWidth();
 var maxSize;

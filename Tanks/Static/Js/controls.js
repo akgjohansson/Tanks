@@ -284,14 +284,7 @@ function StopRotation(player) {
     $(`#${player.name}`).css('transform', `rotate(${degree})`);
 }
 
-var DirectionEnum = {
-    UP: 0,
-    LEFT: 1,
-    DOWN: 2,
-    RIGHT: 3,
-    FORWARD: 4,
-    BACKWARD:5
-}
+
 //var squareSize = 60; //square size in pixels
 
 $(document).keydown(function (event) {

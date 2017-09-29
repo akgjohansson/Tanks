@@ -20,22 +20,27 @@
     }
     $(".square").css("height", `${squareSize}px`);
     $(".square").css("width", `${squareSize}px`);
+    $(".square").css("background-size", `${squareSize}px`);
 }
 
 function PlaceTankAndShot(player) {
     $("#mainDiv").append(`<div id="${player.name}" class="tank"></div>`);
     var tankType;
     if (player.name == "player1")
-        tankType = "../img/PinkTank.png";
+        tankType = "/Static/img/PinkTank.png";
     else
-        tankType = "../img/CowTank.png";
-    $(`#${player.name}`).css("background-image", `url('${tankType}')`);
-    $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
-    $(`#${player.name}shot`).css("background-image", "url('../img/shot.png')"); //todo- rita shot!
+        tankType = "/Static/img/CowTank.png";
     $(`#${player.name}`).css("left", player.x + halfSquareSize);
     $(`#${player.name}`).css("top", player.y + halfSquareSize);
     $(`#${player.name}`).css("height", squareSize);
     $(`#${player.name}`).css("width", squareSize);
+    $(`#${player.name}`).css("background-image", `url('${tankType}')`);
+    $(`#${player.name}`).css("background-size", `${squareSize *0.8}px`);
+    $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
+    $(`#${player.name}shot`).css("background-image", "url('../img/shot.png')"); //todo- rita shot!
+    
+    
+    
 }
 /*
 0: road
@@ -69,3 +74,4 @@ var boardLayout =
 addDivs();
 PlaceTankAndShot(player1);
 PlaceTankAndShot(player2);
+alert('hej');

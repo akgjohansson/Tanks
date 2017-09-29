@@ -7,7 +7,7 @@
 
 .wall {
     
-    background-image: url('../img/Wall.png');
+    background-image: url('/Static/img/Wall.png');
 }
 
 .water {
