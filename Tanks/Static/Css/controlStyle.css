@@ -1,4 +1,7 @@
-﻿
+﻿:root{
+    --speed: 5px
+}
+
 body {
 
 }
@@ -44,13 +47,19 @@ polymer-element{}
     display:none;
 }
 
-.smoothShot{
-    
-    transition-timing-function:linear;
+.tank {
+    position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: left 2s, top 2s;
+    transition-timing-function: linear;
 }
 
-.shot {
-    left: 0px;
-    top: 0px;
-    position: absolute;
+.smoothRotation {
+    transition: left 2s, top 2s, transform 1s;
+    transition-timing-function: linear;
+}
+
+.smallFire {
+   
 }
