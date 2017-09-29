@@ -67,28 +67,6 @@ function GetSquareType(x , y) {
     return null;
 }
 
-function CreatePlayer(x , y , startDirection , playerName) {
-    var player = {
-        name : playerName,
-        x : 0,
-        y : 0,
-        toX : 0,
-        toY : 0,
-        moving : false,
-        direction : startDirection,
-        directionType : DirectionEnum.FORWARD,
-        rotating : false,
-        shotx : 0,
-        shoty: 0,
-        shotToX: 0,
-        shotToY: 0,
-        movingShot: false,
-        shotDirection : DirectionEnum.DOWN,
-        movementClass: "",
-        hits: 0
-    };
-    return player;
-}
 
 function NextCoord(x, y, direction, step) {
     switch (direction) {
@@ -220,9 +198,9 @@ function DrawRemainingLife(player) {
 }
 
 function CanShotGoHere(player, opponent) {
-    var nextSquare = NextCoord(player.shotx, player.shoty, player.shotDirection, gridSize);
-    var nextX = (nextSquare[0] - halfSquareSize) / gridSize;
-    var nextY = (nextSquare[1] - halfSquareSize) / gridSize;
+    var nextSquare = NextCoord(player.shotx, player.shoty, player.shotDirection, squareSize);
+    var nextX = (nextSquare[0] - halfSquareSize) / squareSize;
+    var nextY = (nextSquare[1] - halfSquareSize) / squareSize;
     var nextSquareType = GetSquareType(nextX, nextY);
     if (nextSquareType == "wall" || nextSquareType == "bush")
         return 0;
@@ -314,19 +292,7 @@ var DirectionEnum = {
     FORWARD: 4,
     BACKWARD:5
 }
-var lives = 3;
-var rows = 15;
-var columns = 15;
-var squareSize = 60; //square size in pixels
-var halfSquareSize = squareSize / 2;
-var shotSize = 14;
-var halfShotSize = shotSize / 2;
-var xBoundry = [halfSquareSize, squareSize * columns - halfSquareSize];
-var yBoundry = [halfSquareSize, squareSize * rows - halfSquareSize];
-var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize , DirectionEnum.DOWN , 'player1');
-var player2 = CreatePlayer(columns * squareSize - halfSquareSize, rows * squareSize - halfSquareSize, DirectionEnum.UP , 'player2');
-var stepSize = 1 * gridSize;
-var squareTypes = ['road', 'wall', 'water','bush','bridge'];
+//var squareSize = 60; //square size in pixels
 
 $(document).keydown(function (event) {
     switch (event.keyCode) {
@@ -371,3 +337,5 @@ $(document).keydown(function (event) {
     
 
 })
+
+setInterval(MoveObjects, 100);
