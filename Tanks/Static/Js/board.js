@@ -2,8 +2,6 @@
     $("#mainDiv").html("hej");
     for (var x = 0; x < 15; x++) {
         $("#mainDiv").append(`<div class="x${x}"></div>`);
-
-        var text = $("#mainDiv").text();
         for (var y = 0; y < 15; y++) {
             $(`.x${x}`).append(`<div class="y${y}"></div>`)
             var child = $(`.x${x}`).children(`.y${y}`);
@@ -12,10 +10,6 @@
             child.css('left', x * squareSize);
             child.css('top', y * squareSize);
             child.addClass('square');
-
-            
-            var childClass = child.attr('class');
-            console.log(childClass);
         }
     }
     $(".square").css("height", `${squareSize}px`);
@@ -24,23 +18,59 @@
 }
 
 function PlaceTankAndShot(player) {
-    $("#mainDiv").append(`<div id="${player.name}" class="tank"></div>`);
+    $("#mainDiv").append(`<div id="${player.name}" class="tank smoothRotation"></div>`);
     var tankType;
     if (player.name == "player1")
         tankType = "/Static/img/PinkTank.png";
     else
         tankType = "/Static/img/CowTank.png";
-    $(`#${player.name}`).css("left", player.x + halfSquareSize);
-    $(`#${player.name}`).css("top", player.y + halfSquareSize);
-    $(`#${player.name}`).css("height", squareSize);
-    $(`#${player.name}`).css("width", squareSize);
-    $(`#${player.name}`).css("background-image", `url('${tankType}')`);
-    $(`#${player.name}`).css("background-size", `${squareSize *0.8}px`);
+    var tank = $(`#${player.name}`);
+    tank.css("left", player.x - halfSquareSize);
+    tank.css("top", player.y - halfSquareSize);
+    tank.css("height", squareSize);
+    tank.css("width", squareSize);
+    tank.css("background-image", `url('${tankType}')`);
+    tank.css("background-size", `${squareSize * 0.8}px`);
+    RotateTheTankToDirection(player);
     $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
-    $(`#${player.name}shot`).css("background-image", "url('../img/shot.png')"); //todo- rita shot!
+    $(`#${player.name}shot`).css("background-image", "url('/Static/img/shot.png')"); //todo- rita shot!
     
     
     
+}
+
+function RotateTheTankToDirection(player , rotateDirection = null) {
+    var degree = GetAngleFromDirection(player.direction); 
+
+    // TODO: rotation
+    if (rotateDirection != null) {
+        if (rotateDirection == "counter" && degree == 0) {
+            ResetAngleToUnit($(`#${player.name}`), 360);
+            degree = 360;
+        
+        
+        } else if (rotateDirection == "clock" && degree == 360) {
+            ResetAngleToUnit($(`#${player.name}`), 0);
+            degree = 360;
+        }
+    }
+    
+    $(`#${player.name}`).css("transform", `rotate(${degree}deg)`);
+    
+
+}
+
+function GetAngleFromDirection(direction) {
+    switch (direction) {
+        case DirectionEnum.LEFT:
+            return 90;
+        case DirectionEnum.DOWN:
+            return 180;
+        case DirectionEnum.RIGHT:
+            return 270;
+        default:
+            return 0;
+    }
 }
 /*
 0: road
@@ -74,4 +104,3 @@ var boardLayout =
 addDivs();
 PlaceTankAndShot(player1);
 PlaceTankAndShot(player2);
-alert('hej');

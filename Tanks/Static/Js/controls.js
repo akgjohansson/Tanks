@@ -4,6 +4,7 @@
         player.rotating = true;
         player.direction = NewDirection(player.direction, DirectionEnum.LEFT);
         
+        RotateTheTankToDirection(player,"counter");
     }
 }
 function RotateRight(player)
@@ -11,24 +12,33 @@ function RotateRight(player)
     if (!player.rotating) {
         player.rotating = true;
         player.direction = NewDirection(player.direction, DirectionEnum.RIGHT);
+        RotateTheTankToDirection(player,"clock");
     }
 }
-function MoveForward(player){
+function MoveForward(player) {
+    console.log((player.x == player.toX) && (player.y == player.toY));
     if ((player.x == player.toX) && (player.y == player.toY)) {
         var newPosition = NextCoord(player.x, player.y, player.direction, stepSize);
-        if (CanIGoHere(newPosition[0], newPosition[1])) {
-            player.toX = newPosition[0];
-            player.toY = newPosition[1];
+        if (CanIGoHere(newPosition[0], newPosition[1],player)) {
+            MoveTheTankToHere(player, newPosition[0], newPosition[1]);
+            
+
         }
     }
+}
+
+function MoveTheTankToHere(player, x, y) {
+    player.toX = x;
+    player.toY = y;
+    $(`#${player.name}`).css("left", `${player.toX - halfSquareSize}px`);
+    $(`#${player.name}`).css("top", `${player.toY - halfSquareSize}px`);
 }
 
 function MoveBackward(player) {
     if ((player.x == player.tox) || (player.y == player)) {
         var newPosition = NextCoord(player.x, player.y, player.direction, -stepSize);
-        if (CanIGoHere(newPosition[0], newPosition[1])) {
-            player.toX = newPosition[0];
-            player.toY = newPosition[1];
+        if (CanIGoHere(newPosition[0], newPosition[1], player)) {
+            MoveTheTankToHere(player, newPosition[0], newPosition[1]);
         }
     }
 }
@@ -46,6 +56,11 @@ function Shoot(player) {
 }
 
 function CanIGoHere(x, y, player) {
+    if (x < 0 || y < 0 || x > xBoundry || y > yBoundry)
+        return false;
+    console.log(player.name);
+    console.log("x=", x);
+    console.log("y=", y);
     var tryx = (x - halfSquareSize) / squareSize;
     var tryy = (y - halfSquareSize) / squareSize;
     var squareType = GetSquareType(tryx , tryy);
@@ -56,8 +71,11 @@ function CanIGoHere(x, y, player) {
     return true;
 }
 
-function GetSquareType(x , y) {
-    var squareClasses = document.getElementById(`.x${x}.y${y}`).className.split(/\s+/);
+function GetSquareType(x, y) {
+    console.log(x);
+    console.log(y);
+    var squareClasses = $(`.x${x}`).children(`.y${y}`).attr('class').split(/\s+/);
+    console.log(squareClasses);
     for (var i = 0; i < squareClasses.length; i++) {
         for (var j = 0; j < squareTypes.length; j++) {
             if (squareClasses[i] == squareTypes[j])
@@ -144,7 +162,7 @@ function GetRotationAngle(playerName) {
         tank.css("-o-transform") ||
         tank.css("transform");
     if (input !== 'none') {
-        var values = matrix.split('(')[1].split(')')[0].split(',');
+        var values = input.split('(')[1].split(')')[0].split(',');
         var a = values[0];
         var b = values[1];
         return Math.round(Math.atan2(b, a) * (180 / Math.PI));
@@ -172,10 +190,30 @@ function ValidateTankMovement(player) {
 }
 
 function RotateTheTank(player) {
-    var angle = GetRotationAngle(player.name);
-    if (HasTankRotatedAllTheWay(angle, player.direction)) {
-        StopRotation(player);
+    var currentAngle = GetRotationAngle(player.name);
+    console.log("currentAngle=" + currentAngle);
+    
+    console.log("angle after reset=" + GetRotationAngle(player.name));
+    if (HasTankRotatedAllTheWay(currentAngle, player)) {
+        player.rotating = false;
     }
+}
+
+function ResetAngleToUnit(tank, newAngle) {
+    tank.removeClass("smoothRotation");
+    tank.css("transform", `rotate(${newAngle}deg)`);
+    tank.addClass("smoothRotation");
+}
+
+function HasTankRotatedAllTheWay(currentAngle, player) {
+    var toDegree = GetAngleFromDirection(player.direction);
+    console.log(toDegree);
+    console.log(currentAngle);
+    if (currentAngle == toDegree) {
+        
+        return true;
+    }
+    return false;
 }
 
 function ShootTheOpponent(player,opponent) {
@@ -250,7 +288,7 @@ function MoveObjects() {
         }
 
         if (thisPlayer.rotating) {
-            RotateTheTank(player);
+            RotateTheTank(thisPlayer);
         }
 
         if (thisPlayer.movingShot) {
@@ -261,28 +299,7 @@ function MoveObjects() {
     }
 }
 
-function StopRotation(player) {
-    player.rotating = false;
-    var degree;
-    switch (player.direction) {
-        case DirectionEnum.UP:
-            degree = 0;
-            break;
-        case DirectionEnum.RIGHT:
-            degree = 270;
-            break;
-        case DirectionEnum.DOWN:
-            degree = 180;
-            break;
-        case DirectionEnum.LEFT:
-            degree = 90;
-            break;
-    }
-    $(`#${player.name}`).removeClass(player.movementClass);
-    $(`#${player.name}`).css('-ms-transform', `rotate(${degree})`);
-    $(`#${player.name}`).css('-webkit-transform', `rotate(${degree})`);
-    $(`#${player.name}`).css('transform', `rotate(${degree})`);
-}
+
 
 
 //var squareSize = 60; //square size in pixels

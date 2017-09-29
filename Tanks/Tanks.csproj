@@ -171,6 +171,7 @@
     <Content Include="Static\img\Ground.png" />
     <Content Include="Static\img\Ocean.png" />
     <Content Include="Static\img\PinkTank.png" />
+    <Content Include="Static\img\shot.png" />
     <Content Include="Static\img\Wall.png" />
     <Content Include="Static\Js\board.js" />
     <Content Include="Static\Js\controls.js" />

@@ -1,10 +1,10 @@
 ﻿function CreatePlayer(x, y, startDirection, playerName) {
     var player = {
         name: playerName,
-        x: 0,
-        y: 0,
-        toX: 0,
-        toY: 0,
+        x: x,
+        y: y,
+        toX: x,
+        toY: y,
         moving: false,
         direction: startDirection,
         directionType: DirectionEnum.FORWARD,
@@ -59,11 +59,12 @@ else
 var rows = 15;
 var columns = 15;
 
-squareSize = Math.floor(maxSize / rows);
+var squareSize = Math.floor(maxSize / rows);
 squareSize -= squareSize % 2;
 
 var halfSquareSize = squareSize / 2;
-var shotSize = 14;
+console.log("halfSquareSize=", halfSquareSize);
+var shotSize = squareSize * 0.2;
 var halfShotSize = shotSize / 2;
 var xBoundry = [halfSquareSize, squareSize * columns - halfSquareSize];
 var yBoundry = [halfSquareSize, squareSize * rows - halfSquareSize];
@@ -74,3 +75,4 @@ var squareTypes = ['road', 'wall', 'water', 'bush', 'bridge'];
 var lives = 3;
 var rows = 15;
 var columns = 15;
+
