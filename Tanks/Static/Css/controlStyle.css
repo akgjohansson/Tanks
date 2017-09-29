@@ -46,3 +46,20 @@ polymer-element{}
 .invisible{
     display:none;
 }
+
+.tank {
+    position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: left 2s, top 2s;
+    transition-timing-function: linear;
+}
+
+.smoothRotation {
+    transition: left 2s, top 2s, transform 1s;
+    transition-timing-function: linear;
+}
+
+.smallFire {
+   
+}

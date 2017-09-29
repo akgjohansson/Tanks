@@ -349,3 +349,51 @@ $(document).keydown(function (event) {
 })
 
 setInterval(MoveObjects, 100);
+
+var typeOfSmoke;
+var timeForSmoke;
+
+function startSmoke() {
+    typeOfSmoke = 1;
+    timeForSmoke = setInterval(changeSmoke, 300);
+}
+
+function changeSmoke() {
+    if (typeOfSmoke === 1) {
+        bgImage = "img/LitenEld1.png";
+        typeOfSmoke = 2;
+    }
+    else if (typeOfSmoke === 2) {
+        bgImage = "img/LitenEld2.png";
+        typeOfSmoke = 3;
+    }
+    else {
+        bgImage = "img/LitenEld3.png";
+        typeOfSmoke = 1;
+    }
+    document.body.style.background = bgImage;
+}
+
+var typeOfFire;
+var timeForFire;
+
+function startFire() {
+    typeOfFire = 1;
+    timeForFire = setInterval(changeFire, 300);
+}
+
+function changeFire() {
+    if (typeOfFire === 1) {
+        bgImage = "img/StorEld1.png";
+        typeOfFire = 2;
+    }
+    else if (typeOfFire === 2) {
+        bgImage = "img/StorEld2.png";
+        typeOfFire = 3;
+    }
+    else {
+        bgImage = "img/StorEld3.png";
+        typeOfFire = 1;
+    }
+    document.body.style.background = bgImage;
+}
