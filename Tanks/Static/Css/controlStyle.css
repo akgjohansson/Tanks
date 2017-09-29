@@ -63,3 +63,8 @@ polymer-element{}
 .smallFire {
    
 }
+
+.shot {
+    position: absolute;
+    transition-timing-function: linear;
+}

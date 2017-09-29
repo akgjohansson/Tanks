@@ -16,7 +16,6 @@ function RotateRight(player)
     }
 }
 function MoveForward(player) {
-    console.log((player.x == player.toX) && (player.y == player.toY));
     if ((player.x == player.toX) && (player.y == player.toY)) {
         var newPosition = NextCoord(player.x, player.y, player.direction, stepSize);
         if (CanIGoHere(newPosition[0], newPosition[1],player)) {
@@ -35,7 +34,7 @@ function MoveTheTankToHere(player, x, y) {
 }
 
 function MoveBackward(player) {
-    if ((player.x == player.tox) || (player.y == player)) {
+    if ((player.x == player.toX) || (player.y == player.toY)) {
         var newPosition = NextCoord(player.x, player.y, player.direction, -stepSize);
         if (CanIGoHere(newPosition[0], newPosition[1], player)) {
             MoveTheTankToHere(player, newPosition[0], newPosition[1]);
@@ -54,34 +53,37 @@ function Shoot(player) {
             case DirectionEnum.UP:
                 shotETA = newPosition[1] / shotSpeed;
                 transitionKey = 'top';
-                target = 0;
+                target = -squareSize;
                 break;
             case DirectionEnum.LEFT:
                 shotETA = newPosition[0] / shotSpeed;
                 transitionKey = 'left';
-                target = 0;
+                target = -squareSize;
                 break;
             case DirectionEnum.DOWN:
                 shotETA = (yBoundry[1] - newPosition[1]) / shotSpeed;
                 transitionKey = 'top';
-                target = yBoundry[1];
+                target = yBoundry[1] + squareSize;
                 break;
             case DirectionEnum.RIGHT:
                 shotETA = (xBoundry[1] - newPosition[0]) / shotSpeed;
                 transitionKey = 'left';
-                target = xBoundry[1];
+                target = xBoundry[1] + squareSize;
                 break;
             default:
         }
         player.movingShot = true;
-        
+
         $(`#${player.name}shot`).css("left", newPosition[0] - halfShotSize);
         $(`#${player.name}shot`).css("top", newPosition[1] - halfShotSize);
-        $(`#${player.name}shot`).css("transition-timing-function", "linear");
-        $(`#${player.name}shot`).css("transition", `${transitionKey} ${shotETA}s`);
         $(`#${player.name}shot`).addClass("smoothShot");
+        $(`#${player.name}shot`).css("transition", `${transitionKey} ${shotETA}s`);
+        $(`#${player.name}shot`).css("transition-timing-function", "linear");
         $(`#${player.name}shot`).removeClass('invisible');
-        $(`#${player.name}shot`).css(transitionKey, `${target}px`);
+       // $(`#${player.name}shot`).css(transitionKey, `${target}px`);
+        setTimeout(function(){
+            $(`#${player.name}shot`).css(transitionKey, `${target}px`);
+        }, 10);
         
     }
 }
@@ -115,7 +117,6 @@ function GetSquareType(x, y) {
     }
     return null;
 }
-
 
 function NextCoord(x, y, direction, step) {
     switch (direction) {
@@ -281,6 +282,8 @@ function DrawRemainingLife(player) {
 }
 
 function CanShotBeHere(player, opponent, shotx, shoty) {
+    if (shotx > xBoundry[1] || shoty > yBoundry[1] || shotx < 0 || shoty < 0)
+        return false;
     var shotInMiddleOfSquareX = shotx - shotx % squareSize + halfSquareSize;
     var shotInMiddleOfSquareY = shoty - shoty % squareSize + halfSquareSize;
     var thisSquareX = (shotx - shotx % squareSize)/squareSize;
