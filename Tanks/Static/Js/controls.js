@@ -101,19 +101,6 @@ function CanIGoHere(x, y, player) {
     return true;
 }
 
-function GetSquareType(x, y) {
-    console.log(x);
-    console.log(y);
-    var squareClasses = $(`.x${x}`).children(`.y${y}`).attr('class').split(/\s+/);
-    console.log(squareClasses);
-    for (var i = 0; i < squareClasses.length; i++) {
-        for (var j = 0; j < squareTypes.length; j++) {
-            if (squareClasses[i] == squareTypes[j])
-                return squareTypes[j];
-        }
-    }
-    return null;
-}
 
 function NextCoord(x, y, direction, step) {
     switch (direction) {
@@ -238,14 +225,9 @@ function HasTankRotatedAllTheWay(currentAngle, player) {
 
 function ShootTheOpponent(player,opponent) {
     opponent.hits++;
-    if (opponent.hits == lives)
-        GameOver(player);
     DrawRemainingLife(opponent);
 }
 
-function GameOver(player) {
-
-}
 
 
 function CanShotBeHere(player, opponent, shotx, shoty) {
@@ -267,13 +249,7 @@ function CanShotBeHere(player, opponent, shotx, shoty) {
     return true;
 }
 
-function ConvertPositionToSquareIndex(x , y) {
-    var output = {
-        x: (x - x % squareSize) / squareSize,
-        y: (y - y % squareSize) / squareSize
-    }
-    return output;
-}
+
 
 function ExplodeTheShot(player) {
     player.movingShot = false;
@@ -297,7 +273,6 @@ function PerformShotMovement(player, opponent) {
 }
 
 function MoveObjects() {
-    var players = [player1, player2];
     for (var i = 0; i < 2; i++) {
         thisPlayer = players[i];
 
@@ -326,49 +301,50 @@ function MoveObjects() {
 //var squareSize = 60; //square size in pixels
 
 $(document).keydown(function (event) {
-    switch (event.keyCode) {
-        case 16: //tab
-            Shoot(player1);
-            break;
-        case 87: //w
-            MoveForward(player1);
-            break;
-        case 83: //s
-            MoveBackward(player1);
-            break;
-        case 65: //a
-            if (!player1.rotating && !player1.moving)
-                RotateLeft(player1);
-            break;
-        case 68: //d
-            if (!player1.rotating && !player1.moving)
-                RotateRight(player1);
-            break;
-        case 32: //space
-            Shoot(player2);
-            break;
-        case 38: //up
-            MoveForward(player2);
-            break;
-        case 40: //down
-            MoveBackward(player2);
-            break;
-        case 37: //left
-            if (!player2.rotating && !player2.moving)
-                RotateLeft(player2);
-            break;
-        case 39: //right
-            if (!player2.rotating && !player2.moving)
-                RotateRight(player2);
-            break;
+    if (gameIsStarted) {
+        switch (event.keyCode) {
+            case 16: //tab
+                Shoot(players[0]);
+                break;
+            case 87: //w
+                MoveForward(players[0]);
+                break;
+            case 83: //s
+                MoveBackward(players[0]);
+                break;
+            case 65: //a
+                if (!players[0].rotating && !players[0].moving)
+                    RotateLeft(players[0]);
+                break;
+            case 68: //d
+                if (!players[0].rotating && !players[0].moving)
+                    RotateRight(players[0]);
+                break;
+            case 32: //space
+                Shoot(players[1]);
+                break;
+            case 38: //up
+                MoveForward(players[1]);
+                break;
+            case 40: //down
+                MoveBackward(players[1]);
+                break;
+            case 37: //left
+                if (!players[1].rotating && !players[1].moving)
+                    RotateLeft(players[1]);
+                break;
+            case 39: //right
+                if (!players[1].rotating && !players[1].moving)
+                    RotateRight(players[1]);
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
-    
 
 })
-setInterval(MoveObjects, 100);
+
 
 var typeOfSmoke;
 var timeForSmoke;

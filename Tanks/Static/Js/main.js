@@ -1,21 +1,29 @@
 ﻿function DrawRemainingLife(player) {
     var lifeToken = $(`#${player.name}lifeToken`);
     lifeToken.html("");
-    for (var i = 0; i < lives - player.hits; i++) {
-        lifeToken.append('<img src="/Static/img/PinkTank.png">');
+    var livesLeft = lives - player.hits;
+    if (livesLeft == 0)
+        GameOver(player);
+    for (var i = 0; i < livesLeft; i++) {
+        lifeToken.append(`<img src="${player.image}">`);
 
     }
 }
 
-function CreatePlayer(x, y, startDirection, playerName) {
+function GameOver(player) {
+    alert(`${player.name} just died!`);
+}
+
+
+function CreatePlayer(playerName) {
     var player = {
         name: playerName,
-        x: x,
-        y: y,
-        toX: x,
-        toY: y,
+        x: 0,
+        y: 0,
+        toX: 0,
+        toY: 0,
         moving: false,
-        direction: startDirection,
+        direction: DirectionEnum.UP,
         directionType: DirectionEnum.FORWARD,
         rotating: false,
         shotx: 0,
@@ -25,7 +33,8 @@ function CreatePlayer(x, y, startDirection, playerName) {
         movingShot: false,
         shotDirection: DirectionEnum.DOWN,
         movementClass: "",
-        hits: 0
+        hits: 0,
+        image: ""
     };
     return player;
 }
@@ -91,7 +100,7 @@ var columns = 15;
 var squareSize = Math.floor(maxSize / rows);
 squareSize -= squareSize % 2;
 var shotSpeed = squareSize / 0.5;
-
+var gameIsStarted = false;
 var halfSquareSize = squareSize / 2;
 console.log("halfSquareSize=", halfSquareSize);
 var shotSize = 12;
@@ -100,11 +109,42 @@ var tankSize = Math.round(squareSize * 0.8) - Math.round(squareSize * 0.8)%2;
 var halfTankSize = tankSize / 2;
 var xBoundry = [0, squareSize * columns];
 var yBoundry = [0, squareSize * rows];
-var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize, DirectionEnum.DOWN, 'player1');
-var player2 = CreatePlayer(columns * squareSize - halfSquareSize, rows * squareSize - halfSquareSize, DirectionEnum.UP, 'player2');
 var stepSize = 1 * squareSize;
 var squareTypes = ['road', 'wall', 'water', 'bush', 'bridge'];
+var tankImages = ['/Static/img/CowTank.png', '/Static/img/PinkTank.png'];
 var lives = 3;
 var rows = 15;
 var columns = 15;
+var numberOfPlayers;
+var players;
+console.log($("#numberOfPlayers").children());
+$("#namesChosen").click(function () {
+    numberOfPlayers = $("#selectNPlayers").find(":selected").val();
+    $("#playerNames").html("Skriv in namnen på spelarna:<br/>");
+    for (var i = 0; i < numberOfPlayers; i++) {
+        $("#playerNames").append(`Spelare ${i+1}:<br/><input type="text" id="player${i+1}name"/><br/>`)
+    }
+    $("#sendNamesButton").removeClass("invisible");
+})
+$(".sendNames").click(function () {
+    var playerNames = new Array(numberOfPlayers);
+    var allNamesIn = true;
+    for (var i = 0; i < numberOfPlayers; i++) {
+        playerNames[i] = $(`#player${i + 1}name`).val();
+        if (playerNames[i].length == 0) {
+            allNamesIn = false;
+            break;
+        }
+    }
+    if (allNamesIn) {
+        players = new Array(numberOfPlayers);
+        for (var i = 0; i < numberOfPlayers; i++) {
+            players[i] = CreatePlayer(playerNames[i]);
+            
+        }
+        StartGame();
+    } else {
+        $("#sendNamesMessage").html("You must fill all name fields!");
+    }
+})
 

@@ -159,6 +159,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="game.html" />
     <Content Include="index.html" />
     <Content Include="Static\Css\boardStyle.css" />
     <Content Include="Static\Css\controlStyle.css" />

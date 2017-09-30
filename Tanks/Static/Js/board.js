@@ -1,5 +1,5 @@
 ﻿function addDivs() {
-    $("#mainDiv").html("hej");
+    $("#mainDiv").html("");
     for (var x = 0; x < 15; x++) {
         $("#mainDiv").append(`<div class="x${x}"></div>`);
         for (var y = 0; y < 15; y++) {
@@ -18,33 +18,114 @@
     
     $("#lifeTokens").css("left", `${xBoundry[1]}px`);
 }
+function GetSquareType(x, y) {
+    console.log(x);
+    console.log(y);
+    var squareClasses = $(`.x${x}`).children(`.y${y}`).attr('class').split(/\s+/);
+    console.log(squareClasses);
+    for (var i = 0; i < squareClasses.length; i++) {
+        for (var j = 0; j < squareTypes.length; j++) {
+            if (squareClasses[i] == squareTypes[j])
+                return squareTypes[j];
+        }
+    }
+    return null;
+}
 
-function PlaceTankAndShot(player) {
-    $("#mainDiv").append(`<div id="${player.name}" class="tank smoothRotation"></div>`);
-    var tankType;
-    if (player.name == "player1")
-        tankType = "/Static/img/PinkTank.png";
-    else
-        tankType = "/Static/img/CowTank.png";
-    var tank = $(`#${player.name}`);
-    tank.css("left", player.x - halfSquareSize);
-    tank.css("top", player.y - halfSquareSize);
-    tank.css("height", squareSize);
-    tank.css("width", squareSize);
-    tank.css("background-image", `url('${tankType}')`);
-    tank.css("background-size", `${tankSize}px`);
-    RotateTheTankToDirection(player);
+function GetListOfOpponents(player,players) {
+    var enemies = new Array(players.length - 1);
+    var counter = 0;
+    for (var i = 0; i < players.length; i++) {
+        if (players[i].name != player.name) {
+            enemies[counter] = players[i];
+            counter++;
+        }
+    }
+    return enemies;
+}
 
-    $("#mainDiv").append(`<div id="${player.name}shot" class="shot invisible"></div>`)
-    var shot = $(`#${player.name}shot`);
-    shot.css("width", `${shotSize}px`);
-    shot.css("height", `${shotSize}px`);
+function GetOpponentLocation(player , players) {
+    var enemies = GetListOfOpponents(player , players);
+    var locations = new Array(enemies.length);
+    for (var i = 0; i < enemies.length; i++) {
+        var location = ConvertPositionToSquareIndex(enemies[i].x, enemies[i].y);
+        locations[i] = location;
+    }
+    return locations;
+}
+function ConvertPositionToSquareIndex(x, y) {
+    var output = {
+        x: (x - x % squareSize) / squareSize,
+        y: (y - y % squareSize) / squareSize
+    }
+    return output;
+}
+function RandomizeStartLocation(players) {
+    var whereAreTheRoads = WhereAreTheRoads();
+    var length = whereAreTheRoads.length;
+    for (var i = 0; i < players.length; i++) {
+        var enemyLocations = GetOpponentLocation(players[i] , players);
+        var output;
+        while (true) {
+            var suggestLocation = whereAreTheRoads[Math.round(Math.random() * length)];
+            var checkedEnemies = 0;
+            for (var j = 0; j < enemyLocations.length; j++) {
+                if (enemyLocations[j].x != suggestLocation.x && enemyLocations[j].y != suggestLocation.y)
+                    checkedEnemies++;
+            }
+            if (checkedEnemies == enemyLocations.length) {
+                output = suggestLocation;
+                break;
+            }
 
-    shot.css("background-image", "url('/Static/img/shot.png')"); //todo- rita shot!
-    shot.css("background-size", `${shotSize}px`);
+        }
+        players[i].x = suggestLocation.x*squareSize + halfSquareSize;
+        players[i].y = suggestLocation.y * squareSize + halfSquareSize;
+        players[i].toX = players[i].x;
+        players[i].toY = players[i].y;
+    }
+}
 
-    $("#lifeTokens").append(`<div id="${player.name}lifeToken"></div>`);
-    DrawRemainingLife(player);
+function WhereAreTheRoads() {
+    var roadIndeces = [];
+    for (var x = 0; x < rows; x++) {
+        for (var y = 0; y < columns; y++) {
+            var thisSquareType = GetSquareType(x, y);
+            if (thisSquareType == "road" || /^bridge/.test(thisSquareType)) {
+                var thisSquareCoords = { x: x, y: y };
+                roadIndeces.push(thisSquareCoords);
+            }
+        }
+    }
+    return roadIndeces;
+}
+
+function PlaceTankAndShot(players) {
+    for (var i = 0; i < players.length; i++) {
+
+        $("#mainDiv").append(`<div id="${players[i].name}" class="tank smoothRotation"></div>`);
+        players[i].image = tankImages[i%tankImages.length];
+        
+        var tank = $(`#${players[i].name}`);
+        tank.css("left", players[i].x - halfSquareSize);
+        tank.css("top", players[i].y - halfSquareSize);
+        tank.css("height", squareSize);
+        tank.css("width", squareSize);
+        tank.css("background-image", `url('${players[i].image}')`);
+        tank.css("background-size", `${tankSize}px`);
+        RotateTheTankToDirection(players[i]);
+
+        $("#mainDiv").append(`<div id="${players[i].name}shot" class="shot invisible"></div>`)
+        var shot = $(`#${players[i].name}shot`);
+        shot.css("width", `${shotSize}px`);
+        shot.css("height", `${shotSize}px`);
+
+        shot.css("background-image", "url('/Static/img/shot.png')"); //todo- rita shot!
+        shot.css("background-size", `${shotSize}px`);
+
+        $("#lifeTokens").append(`<div id="${players[i].name}lifeToken"></div>`);
+        DrawRemainingLife(players[i]);
+    }
     
 }
 
@@ -102,8 +183,12 @@ var boardLayout =
         [0, 0, 0, 0, 0, 0, 0, 1, 1, 3, 0, 0, 0, 0, 0],
         [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0],
         [0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 1, 1, 0, 0],];
-addDivs();
-PlaceTankAndShot(player1);
-PlaceTankAndShot(player2);
+function StartGame() {
+    addDivs();
+    RandomizeStartLocation(players);
+    PlaceTankAndShot(players);
+    gameIsStarted = true;
+    setInterval(MoveObjects, 100);
+}
 
 
