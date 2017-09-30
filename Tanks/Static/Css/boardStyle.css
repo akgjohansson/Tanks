@@ -52,3 +52,7 @@
     transition: left 2s, top 2s, transform 1s;
     transition-timing-function: linear;
 }
+
+.lifeToken{
+    position:absolute;
+}

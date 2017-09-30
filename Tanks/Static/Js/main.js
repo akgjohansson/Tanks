@@ -1,4 +1,13 @@
-﻿function CreatePlayer(x, y, startDirection, playerName) {
+﻿function DrawRemainingLife(player) {
+    var lifeToken = $(`#${player.name}lifeToken`);
+    lifeToken.html("");
+    for (var i = 0; i < lives - player.hits; i++) {
+        lifeToken.append('<img src="/Static/img/PinkTank.png">');
+
+    }
+}
+
+function CreatePlayer(x, y, startDirection, playerName) {
     var player = {
         name: playerName,
         x: x,
@@ -19,6 +28,27 @@
         hits: 0
     };
     return player;
+}
+function GetRotationAngle(playerName) {
+    var tank = $(`#${playerName}`);
+    var input = tank.css("-webkit-transform") ||
+        tank.css("-moz-transform") ||
+        tank.css("-ms-transform") ||
+        tank.css("-o-transform") ||
+        tank.css("transform");
+    if (input !== 'none') {
+        var values = input.split('(')[1].split(')')[0].split(',');
+        var a = values[0];
+        var b = values[1];
+        var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+        if (angle < 0)
+            return angle + 360;
+        else if (angle > 360)
+            return angle - 360;
+        return angle;
+    } else {
+        return 0;
+    }
 }
 
 function getWidth() {
@@ -66,6 +96,8 @@ var halfSquareSize = squareSize / 2;
 console.log("halfSquareSize=", halfSquareSize);
 var shotSize = 12;
 var halfShotSize = shotSize / 2;
+var tankSize = Math.round(squareSize * 0.8) - Math.round(squareSize * 0.8)%2;
+var halfTankSize = tankSize / 2;
 var xBoundry = [0, squareSize * columns];
 var yBoundry = [0, squareSize * rows];
 var player1 = CreatePlayer(0 * squareSize + halfSquareSize, 0 * squareSize + halfSquareSize, DirectionEnum.DOWN, 'player1');

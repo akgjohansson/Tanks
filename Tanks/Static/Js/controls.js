@@ -43,7 +43,7 @@ function MoveBackward(player) {
 }
 
 function Shoot(player) {
-    if (!player.movingShot) {
+    if (!player.movingShot && !player.moving && !player.rotating) {
         player.shotDirection = player.direction;
         var shotETA;
         var transitionKey;
@@ -89,11 +89,8 @@ function Shoot(player) {
 }
 
 function CanIGoHere(x, y, player) {
-    if (x < 0 || y < 0 || x > xBoundry || y > yBoundry)
+    if (x < 0 || y < 0 || x > xBoundry[1] || y > yBoundry[1])
         return false;
-    console.log(player.name);
-    console.log("x=", x);
-    console.log("y=", y);
     var tryx = (x - halfSquareSize) / squareSize;
     var tryy = (y - halfSquareSize) / squareSize;
     var squareType = GetSquareType(tryx , tryy);
@@ -186,27 +183,6 @@ function HasTankMovedAllTheWay(nowX, nowY, toX, toY, direction , directionType) 
     return false;
 }
 
-function GetRotationAngle(playerName) {
-    var tank = $(`#${playerName}`);
-    var input = tank.css("-webkit-transform") ||
-        tank.css("-moz-transform") ||
-        tank.css("-ms-transform") ||
-        tank.css("-o-transform") ||
-        tank.css("transform");
-    if (input !== 'none') {
-        var values = input.split('(')[1].split(')')[0].split(',');
-        var a = values[0];
-        var b = values[1];
-        var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-        if (angle < 0)
-            return angle + 360;
-        else if (angle > 360)
-            return angle - 360;
-        return angle;
-    } else {
-        return 0;
-    }
-}
 
 function GetTankMoving(player) {
     player.movementClass = `move${player.direction}`;
@@ -253,9 +229,7 @@ function ResetAngleToUnit(tank, newAngle) {
 
 function HasTankRotatedAllTheWay(currentAngle, player) {
     var toDegree = GetAngleFromDirection(player.direction);
-    console.log(toDegree);
-    console.log(currentAngle);
-    if (currentAngle == toDegree) {
+    if (currentAngle%360 == toDegree%360) {
         
         return true;
     }
@@ -273,30 +247,32 @@ function GameOver(player) {
 
 }
 
-function DrawRemainingLife(player) {
-    $(`#${player.name}Life`).html("");
-    for (var i = 0; i < lives - player.hits; i++) {
-
-    }
-    $(`#${player.name}Life`).appendTo('<img src="Static\img\PinkTank.png" class="lifeToken"');
-}
 
 function CanShotBeHere(player, opponent, shotx, shoty) {
     if (shotx > xBoundry[1] || shoty > yBoundry[1] || shotx < 0 || shoty < 0)
         return false;
     var shotInMiddleOfSquareX = shotx - shotx % squareSize + halfSquareSize;
     var shotInMiddleOfSquareY = shoty - shoty % squareSize + halfSquareSize;
-    var thisSquareX = (shotx - shotx % squareSize)/squareSize;
-    var thisSquareY = (shoty - shoty % squareSize)/squareSize;
-    var thisSquareType = GetSquareType(thisSquareX, thisSquareY);
+    var thisSquareIndex = ConvertPositionToSquareIndex(shotx, shoty);
+    var thisSquareType = GetSquareType(thisSquareIndex.x, thisSquareIndex.y);
     if (thisSquareType == "wall" || thisSquareType == "bush")
         return false;
-    if (opponent.x == shotInMiddleOfSquareX && opponent.y == shotInMiddleOfSquareY) {
+    var opponentPosition = $(`#${opponent.name}`).position();
+    var opponentSquareIndex = ConvertPositionToSquareIndex(opponentPosition.left+halfTankSize , opponentPosition.top + halfTankSize);
+    if (opponentSquareIndex.x == thisSquareIndex.x && opponentSquareIndex.y == thisSquareIndex.y) {
         ShootTheOpponent(player, opponent);
         ExplodeTheShot(player);
         return false;
     }
     return true;
+}
+
+function ConvertPositionToSquareIndex(x , y) {
+    var output = {
+        x: (x - x % squareSize) / squareSize,
+        y: (y - y % squareSize) / squareSize
+    }
+    return output;
 }
 
 function ExplodeTheShot(player) {
@@ -392,7 +368,6 @@ $(document).keydown(function (event) {
     
 
 })
-
 setInterval(MoveObjects, 100);
 
 var typeOfSmoke;

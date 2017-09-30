@@ -1,6 +1,4 @@
-﻿:root{
-    --speed: 5px
-}
+﻿
 
 body {
 
@@ -15,33 +13,6 @@ polymer-element{}
     transition-timing-function: linear;
 }
 
-.moveRIGHT{
-
-}
-
-.moveUP{
-
-}
-
-.moveDOWN{
-
-}
-
-.shootUP{
-
-}
-
-.shootDOWN{
-
-}
-
-.shootLEFT{
-
-}
-
-.shootRIGHT{
-
-}
 
 .invisible{
     display:none;
