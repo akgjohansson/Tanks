@@ -129,17 +129,27 @@ function PlaceTankAndShot(players) {
     
 }
 
+function ForceTankToAngle(tank, angle) {
+    tank.removeClass("smoothRotation");
+    setTimeout(function () {
+        tank.css("transform", `rotate(${angle}deg)`);
+    }, 0);
+    console.log(`rotate(${angle}deg)`);
+    tank.addClass("smoothRotation");
+
+}
+
 function RotateTheTankToDirection(player , rotateDirection = null) {
     var degree = GetAngleFromDirection(player.direction); 
-    /*
-    var currentAngle = GetRotationAngle(player.name);
-    var difference = currentAngle - degree;
-    if (Math.abs(difference) > 90) {
-        degree += 360 * Math.sign(difference);
-    }*/
+    if (rotateDirection == DirectionEnum.LEFT && player.direction == DirectionEnum.LEFT) {
+        ForceTankToAngle($(`#${player.name}`), 359)
+        setTimeout(function () { degree = 270; }, 0);
+    } else if (rotateDirection == DirectionEnum.RIGHT && player.direction == DirectionEnum.UP) {
+        degree = 359;
+    }
+    
     $(`#${player.name}`).css("transform", `rotate(${degree}deg)`);
     
-
 }
 
 function GetAngleFromDirection(direction) {

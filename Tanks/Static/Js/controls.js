@@ -4,7 +4,7 @@
         player.rotating = true;
         player.direction = NewDirection(player.direction, DirectionEnum.LEFT);
         
-        RotateTheTankToDirection(player,"counter");
+        RotateTheTankToDirection(player,DirectionEnum.LEFT);
     }
 }
 function RotateRight(player)
@@ -12,34 +12,35 @@ function RotateRight(player)
     if (!player.rotating) {
         player.rotating = true;
         player.direction = NewDirection(player.direction, DirectionEnum.RIGHT);
-        RotateTheTankToDirection(player,"clock");
+        RotateTheTankToDirection(player,DirectionEnum.RIGHT);
     }
 }
 function MoveForward(player) {
-    if ((player.x == player.toX) && (player.y == player.toY)) {
-        var newPosition = NextCoord(player.x, player.y, player.direction, stepSize);
-        if (CanIGoHere(newPosition[0], newPosition[1],player)) {
-            MoveTheTankToHere(player, newPosition[0], newPosition[1]);
-            
+    var newPosition = NextCoord(player.x, player.y, player.direction, stepSize);
+    if (CanIGoHere(newPosition[0], newPosition[1], player)) {
+        player.directionType = DirectionEnum.FORWARD;
+        MoveTheTankToHere(player, newPosition[0], newPosition[1]);
 
-        }
+
     }
+
 }
 
 function MoveTheTankToHere(player, x, y) {
     player.toX = x;
     player.toY = y;
+    player.moving = true;
     $(`#${player.name}`).css("left", `${player.toX - halfSquareSize}px`);
     $(`#${player.name}`).css("top", `${player.toY - halfSquareSize}px`);
 }
 
 function MoveBackward(player) {
-    if ((player.x == player.toX) || (player.y == player.toY)) {
-        var newPosition = NextCoord(player.x, player.y, player.direction, -stepSize);
-        if (CanIGoHere(newPosition[0], newPosition[1], player)) {
-            MoveTheTankToHere(player, newPosition[0], newPosition[1]);
-        }
+    var newPosition = NextCoord(player.x, player.y, player.direction, -stepSize);
+    if (CanIGoHere(newPosition[0], newPosition[1], player)) {
+        player.directionType = DirectionEnum.BACKWARD;
+        MoveTheTankToHere(player, newPosition[0], newPosition[1]);
     }
+
 }
 
 function Shoot(player) {
@@ -83,7 +84,7 @@ function Shoot(player) {
        // $(`#${player.name}shot`).css(transitionKey, `${target}px`);
         setTimeout(function(){
             $(`#${player.name}shot`).css(transitionKey, `${target}px`);
-        }, 10);
+        }, 0);
         
     }
 }
@@ -181,7 +182,7 @@ function ValidateTankMovement(player) {
     var position = $(`#${player.name}`).position();
     var x = position.left + halfSquareSize;
     var y = position.top + halfSquareSize;
-    if (HasTankMovedAllTheWay(x, y, player.toX, player.toY, player.direction)) {
+    if (HasTankMovedAllTheWay(x, y, player.toX, player.toY, player.direction , player.directionType)) {
         player.x = player.toX;
         player.y = player.toY;
         player.moving = false;
@@ -191,28 +192,27 @@ function ValidateTankMovement(player) {
 
 function RotateTheTank(player) {
     var currentAngle = GetRotationAngle(player.name);
-    //console.log("currentAngle=" + currentAngle);
-    
-    //console.log("angle after reset=" + GetRotationAngle(player.name));
+    if (currentAngle == 359) {
+        ForceTankToAngle($(`#${player.name}`), 0);
+    }
+    /*
     if (currentAngle <= 0) {
         console.log("Angle too small!");
-        ResetAngleToUnit($(`#${player.name}`), currentAngle + 360);
+        ForceTankToAngle($(`#${player.name}`), currentAngle + 360);
         RotateTheTankToDirection(player);
     } else if (currentAngle >= 360) {
-        ResetAngleToUnit($(`#${player.name}`), currentAngle - 360);
+        ForceTankToAngle($(`#${player.name}`), currentAngle - 360);
         RotateTheTankToDirection(player);
     }
+    */
     if (HasTankRotatedAllTheWay(currentAngle, player)) {
         player.rotating = false;
     }
 }
 
-function ResetAngleToUnit(tank, newAngle) {
-    tank.removeClass("smoothRotation");
-    tank.css("transform", `rotate(${newAngle}deg)`);
-    console.log(`rotate(${newAngle}deg)`);
-    tank.addClass("smoothRotation");
-}
+
+    
+
 
 function HasTankRotatedAllTheWay(currentAngle, player) {
     var toDegree = GetAngleFromDirection(player.direction);
@@ -262,25 +262,21 @@ function PerformShotMovement(player, opponent) {
     var shotx = Math.round(shotPosition.left + halfShotSize);
     var shoty = Math.round(shotPosition.top + halfShotSize);
 
-
     if (!CanShotBeHere(player, opponent , shotx , shoty)) {
-        
         ExplodeTheShot(player);
-
     }
 
             
 }
 
 function MoveObjects() {
-    for (var i = 0; i < 2; i++) {
-        thisPlayer = players[i];
-
+    // new feature: for of
+    for (let thisPlayer of players) {
         if (thisPlayer.moving) {
             ValidateTankMovement(thisPlayer);
 
-        } else if (thisPlayer.x != thisPlayer.toX || thisPlayer.y != thisPlayer.toY) {
-            GetTankMoving(thisPlayer);
+        //} else if (thisPlayer.x != thisPlayer.toX || thisPlayer.y != thisPlayer.toY) {
+        //    GetTankMoving(thisPlayer);
         }
 
         if (thisPlayer.rotating) {
@@ -288,59 +284,62 @@ function MoveObjects() {
         }
 
         if (thisPlayer.movingShot) {
-            var opponentIndex = (i + 1) % 2;
-            PerformShotMovement(players[i], players[opponentIndex]);
+            let opponents = GetListOfOpponents(thisPlayer,players);
+            // new feature: arrows
+            opponents.forEach(opponent => PerformShotMovement(thisPlayer, opponent));
         }
 
     }
 }
 
-
+function GetPlayerAndKey(keyCode) {
+    for (var i = 0; i < keyCodes.length; i++) {
+        for (var j = 0; j < keyCodes[i].length; j++) {
+            if (keyCodes[i][j] == keyCode) {
+                return [i, j];
+            }
+        }
+    }
+}
 
 
 //var squareSize = 60; //square size in pixels
 
+$(document).keypress(function (event) {
+    if (gameIsStarted)
+        event.preventDefault();
+});
+
 $(document).keydown(function (event) {
     if (gameIsStarted) {
-        switch (event.keyCode) {
-            case 16: //tab
-                Shoot(players[0]);
+        
+        let playerAndKey = GetPlayerAndKey(event.keyCode);
+        let player = players[playerAndKey[0]];
+        switch (playerAndKey[1]) {
+            case 4: //shift
+                Shoot(player);
                 break;
-            case 87: //w
-                MoveForward(players[0]);
+            case 0: //w
+                if (!player.moving)
+                    MoveForward(player);
                 break;
-            case 83: //s
-                MoveBackward(players[0]);
+            case 1: //s
+                if (!player.moving)
+                    MoveBackward(player);
                 break;
-            case 65: //a
-                if (!players[0].rotating && !players[0].moving)
-                    RotateLeft(players[0]);
+            case 2: //a
+                if (!player.rotating && !player.moving)
+                    RotateLeft(player);
                 break;
-            case 68: //d
-                if (!players[0].rotating && !players[0].moving)
-                    RotateRight(players[0]);
-                break;
-            case 32: //space
-                Shoot(players[1]);
-                break;
-            case 38: //up
-                MoveForward(players[1]);
-                break;
-            case 40: //down
-                MoveBackward(players[1]);
-                break;
-            case 37: //left
-                if (!players[1].rotating && !players[1].moving)
-                    RotateLeft(players[1]);
-                break;
-            case 39: //right
-                if (!players[1].rotating && !players[1].moving)
-                    RotateRight(players[1]);
+            case 3: //d
+                if (!player.rotating && !player.moving)
+                    RotateRight(player);
                 break;
 
             default:
                 break;
         }
+        //event.preventDefault();
     }
 
 })

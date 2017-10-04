@@ -176,6 +176,7 @@
     <Content Include="Static\img\Wall.png" />
     <Content Include="Static\Js\board.js" />
     <Content Include="Static\Js\controls.js" />
+    <Content Include="Static\Js\initialParameters.js" />
     <Content Include="Static\Js\main.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

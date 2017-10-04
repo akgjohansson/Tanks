@@ -14,7 +14,6 @@ function GameOver(player) {
     alert(`${player.name} just died!`);
 }
 
-
 function CreatePlayer(playerName) {
     var player = {
         name: playerName,
@@ -38,6 +37,7 @@ function CreatePlayer(playerName) {
     };
     return player;
 }
+
 function GetRotationAngle(playerName) {
     var tank = $(`#${playerName}`);
     var input = tank.css("-webkit-transform") ||
@@ -79,6 +79,7 @@ function getHeight() {
         document.documentElement.clientHeight
     );
 }
+
 var DirectionEnum = {
     UP: 0,
     LEFT: 1,
@@ -105,7 +106,7 @@ var halfSquareSize = squareSize / 2;
 console.log("halfSquareSize=", halfSquareSize);
 var shotSize = 12;
 var halfShotSize = shotSize / 2;
-var tankSize = Math.round(squareSize * 0.8) - Math.round(squareSize * 0.8)%2;
+var tankSize = Math.round(squareSize * 0.8) - Math.round(squareSize * 0.8) % 2;
 var halfTankSize = tankSize / 2;
 var xBoundry = [0, squareSize * columns];
 var yBoundry = [0, squareSize * rows];
@@ -117,6 +118,8 @@ var rows = 15;
 var columns = 15;
 var numberOfPlayers;
 var players;
+let keyCodes_order = ["up", "down", "turn left", "turn right", "shoot"];
+var keyCodes = [[87, 83, 65, 68, 16], [38, 40, 37, 39, 189], [101, 98, 97, 99, 13], [71, 66, 86, 78, 32]];
 console.log($("#numberOfPlayers").children());
 $("#namesChosen").click(function () {
     numberOfPlayers = $("#selectNPlayers").find(":selected").val();
@@ -129,7 +132,7 @@ $("#namesChosen").click(function () {
 $(".sendNames").click(function () {
     var playerNames = new Array(numberOfPlayers);
     var allNamesIn = true;
-    for (var i = 0; i < numberOfPlayers; i++) {
+    for (let i = 0; i < numberOfPlayers; i++) {
         playerNames[i] = $(`#player${i + 1}name`).val();
         if (playerNames[i].length == 0) {
             allNamesIn = false;
@@ -140,7 +143,6 @@ $(".sendNames").click(function () {
         players = new Array(numberOfPlayers);
         for (var i = 0; i < numberOfPlayers; i++) {
             players[i] = CreatePlayer(playerNames[i]);
-            
         }
         StartGame();
     } else {
